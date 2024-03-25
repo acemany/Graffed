@@ -15,35 +15,22 @@ if __name__ == "__main__":
     SC_RES = WIN.get_size()
     display.set_icon(image.load("assets\\icon.bmp").convert())
 
-    colors = (("#EEA5A3", "#CB7689", "#9D5A64"),  # BROWN
-              ("#FFF0F0", "#FFE8D0", "#FFC3B5"),  # BEIGE
-              ("#C198FF", "#997EAB", "#725BAD"),  # VIOLET
-              ("#FFCCFC", "#FF9CDB", "#FF7CBA"),  # PINK
-              ("#FFAAAA", "#FF5273", "#CE3B56"),  # RED
-              ("#FFBA8F", "#FF7C5B", "#D75947"),  # ORANGE
-              ("#FFFF86", "#FFEB00", "#F6BA00"),  # YELLOW
-              ("#C3FF77", "#48D155", "#009352"),  # GREEN
-              ("#00CEFF", "#009BFF", "#0076ED"),  # BLUE
-              ("#9C9FAD", "#CED1D9", "#FFFFFF"),  # WHITE
-              ("#1F1F29", "#444454", "#6D6F7F"),  # BLACK
-              ("#dfecff", "#73adff", "#4f98ff"),
-              ("#b8d5ff", "#43b85b", "#68c67b"),
-              ("#2C7F3D", "#fa963e", "#faaa63"),
-              ("#fe4b4b", "#fe6e6e", "#233055"),
-              ("#1C2643", "#17133c", "#151c34"),
-              ("#233056", "#1c2644", "#0d1221"),
-              ("#0D1221", "#52709c", "#748caf"),
-              ("#4f5977", "#768ba9", "#868890"),
-              ("#e7820a", "#b4b4b4", "#eefc08"),
-              ("#F2F932", "#8781bd", "#30d5c8"),
-              ("#3BCBFF", "#BD70D7", "#AB4873"),
-              ("#31a93a", "#ec4058", "#e8bb00"))
+    colors = (("#E79F9D", "#C57184", "#985660"),  # light_brown,  brown,  dark_brown
+              ("#FFF9F7", "#FFDFC8", "#FFBCAE"),  # light_tan,    tan,    dark_tan
+              ("#BA92FF", "#9476E3", "#6E58A9"),  # light_purple, purple, dark_purple
+              ("#FFC4F4", "#FF9ED9", "#F777B4"),  # light_pink,   pink,   dark_pink
+              ("#FFA4A4", "#FF4E6F", "#C73853"),  # light_red,    red,    dark_red
+              ("#FFB389", "#FF7758", "#D15544"),  # light_orange, orange, dark_orange
+              ("#FFFF81", "#FFE200", "#F0B300"),  # light_yellow, yellow, dark_yellow
+              ("#BBFF72", "#45C952", "#008F50"),  # light_green,  green,  dark_green
+              ("#00C9FF", "#0096FF", "#0071E5"),  # light_blue,   blue,   dark_blue
+              ("#FFFFFF", "#C6C9D3", "#9699A9"),  # white,        gray1,  gray2
+              ("#696B7C", "#424252", "#1E1E28"))  # gray3,        gray4,  black
     colors_size = (len(colors[0])*50, len(colors)*50)
-    color = "#444454"
-    font_antialias = 1
+    color = colors[-1][-1]
 
     CLOCK = time.Clock()
-    MAINFONT = font.SysFont("consolas", 16)
+    MAINFONT = font.SysFont("consolas", 16, bold=True)
 
     while True:
         WIN.fill(color)
@@ -63,7 +50,7 @@ if __name__ == "__main__":
         [[draw.rect(WIN, clr, (x*50, y*50, 50, 50))
           for y, clr in enumerate(clrs)]
          for x, clrs in enumerate(colors)]
-        WIN.blit(MAINFONT.render("\b".join(map(str, (int(CLOCK.get_fps()), mouse_pos))), font_antialias, "#9C9FAD"), (SC_RES[0]/2, 0))
-        CLOCK.tick(256)
+        WIN.blits([(MAINFONT.render(i, 1, "#424252"), (2, 2+16*j)) for j, i in enumerate(map(str, (int(CLOCK.get_fps()), str(mouse_pos)[1:-1], color)))])
+        CLOCK.tick(60)
         display.flip()
     quit()
