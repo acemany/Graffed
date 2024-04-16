@@ -14,7 +14,7 @@
 
 ## ASCII graffed
 
- For pixel drawing
+ For symbol drawing
 
 ## colors
 
