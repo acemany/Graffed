@@ -13,8 +13,6 @@ if __name__ == "__main__":
     init()
     WIN = (display.set_mode())
     SC_RES = WIN.get_size()
-    display.set_icon(image.load("assets\\icon.bmp").convert())
-
     colors = (("#E79F9D", "#C57184", "#985660"),  # light_brown,  brown,  dark_brown
               ("#FFF9F7", "#FFDFC8", "#FFBCAE"),  # light_tan,    tan,    dark_tan
               ("#BA92FF", "#9476E3", "#6E58A9"),  # light_purple, purple, dark_purple
@@ -26,6 +24,8 @@ if __name__ == "__main__":
               ("#00C9FF", "#0096FF", "#0071E5"),  # light_blue,   blue,   dark_blue
               ("#FFFFFF", "#C6C9D3", "#9699A9"),  # white,        gray1,  gray2
               ("#696B7C", "#424252", "#1E1E28"))  # gray3,        gray4,  black
+    display.set_icon(image.load("assets/icon.bmp").convert())
+
     colors_size = (len(colors[0])*50, len(colors)*50)
     color = colors[-1][-1]
 
