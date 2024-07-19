@@ -13,17 +13,17 @@ if __name__ == "__main__":
     init()
     WIN = (display.set_mode())
     SC_RES = WIN.get_size()
-    colors = (("#E79F9D", "#C57184", "#985660"),  # light_brown,  brown,  dark_brown
-              ("#FFF9F7", "#FFDFC8", "#FFBCAE"),  # light_tan,    tan,    dark_tan
-              ("#BA92FF", "#9476E3", "#6E58A9"),  # light_purple, purple, dark_purple
-              ("#FFC4F4", "#FF9ED9", "#F777B4"),  # light_pink,   pink,   dark_pink
-              ("#FFA4A4", "#FF4E6F", "#C73853"),  # light_red,    red,    dark_red
-              ("#FFB389", "#FF7758", "#D15544"),  # light_orange, orange, dark_orange
-              ("#FFFF81", "#FFE200", "#F0B300"),  # light_yellow, yellow, dark_yellow
-              ("#BBFF72", "#45C952", "#008F50"),  # light_green,  green,  dark_green
-              ("#00C9FF", "#0096FF", "#0071E5"),  # light_blue,   blue,   dark_blue
-              ("#FFFFFF", "#C6C9D3", "#9699A9"),  # white,        gray1,  gray2
-              ("#696B7C", "#424252", "#1E1E28"))  # gray3,        gray4,  black
+    colors = (("#E79F9D", "#C57184", "#985660"),
+              ("#FFF9F7", "#FFDFC8", "#FFBCAE"),
+              ("#BA92FF", "#9476E3", "#6E58A9"),
+              ("#FFC4F4", "#FF9ED9", "#F777B4"),
+              ("#FFA4A4", "#FF4E6F", "#C73853"),
+              ("#FFB389", "#FF7758", "#D15544"),
+              ("#FFFF81", "#FFE200", "#F0B300"),
+              ("#BBFF72", "#45C952", "#008F50"),
+              ("#00C9FF", "#0096FF", "#0071E5"),
+              ("#FFFFFF", "#C6C9D3", "#9699A9"),
+              ("#696B7C", "#424252", "#1E1E28"))
     display.set_icon(image.load("assets/icon.bmp").convert())
 
     colors_size = (len(colors[0])*50, len(colors)*50)
