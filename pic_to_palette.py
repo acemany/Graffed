@@ -1,14 +1,13 @@
 from pygame import (display, event, font, image, key, time, transform,
-                    Surface, Vector3,
+                    Color, Surface, Vector3,
                     K_ESCAPE, K_s,
                     init, quit,
                     QUIT)
 from sys import argv, exit
-from typing import Tuple
 
 
 class Font:
-    def __init__(self, pos: Tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
+    def __init__(self, pos: tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
         self.font = font.SysFont(name, scale)
         self.w = self.font.size("n")[0]
         self.h = self.font.get_height()
@@ -17,7 +16,7 @@ class Font:
         self.color = color
         self.text = ""
 
-    def text_input(self, key_in: Tuple, text_in: Tuple, lining: bool = True):
+    def text_input(self, key_in: tuple[event.Event], text_in: tuple[event.Event], lining: bool = True):
         for i in text_in:
             char = i.__dict__["text"]
             if char != "":
@@ -35,7 +34,7 @@ class Font:
 
     def draw(self, win: Surface, pos: tuple[int, int], text: str, antialias: bool, centering: int = 0):
         if centering:
-            win.blits([(self.font.render(text, antialians, self.color),
+            win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
         else:
@@ -43,17 +42,17 @@ class Font:
                        (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 
-    def blit(self, win: Surface, antialians: int):
-        win.blits([(self.font.render(text, antialians, self.color),
+    def blit(self, win: Surface, antialias: bool):
+        win.blits([(self.font.render(text, antialias, self.color),
                    (self.x, self.y+y*self.h))
                    for y, text in enumerate(self.text.split("\n"))])
 
 
-def pic_to_pal(color: Tuple[int, int, int] = (255, 0, 0)):
+def pic_to_pal(color: tuple[int, int, int] | Color = (255, 0, 0)) -> tuple[int, int, int]:
     to = Vector3(color[0], color[1], color[2])
-    res = (to[0]//64*64,
-           to[1]//64*64,
-           to[2]//64*64)
+    res = (int(to[0]//64*64),
+           int(to[1]//64*64),
+           int(to[2]//64*64))
     # a = 444
     # or i in RGBcolor:
     #    d = i.distance_to(to)
@@ -63,10 +62,10 @@ def pic_to_pal(color: Tuple[int, int, int] = (255, 0, 0)):
     return res
 
 
-def rgb_to_hex(color: Tuple[int, int, int] = (255, 0, 0)):
-    hr = f"{int(color[0]): 0x}"
-    hg = f"{int(color[1]): 0x}"
-    hb = f"{int(color[2]): 0x}"
+def rgb_to_hex(color: tuple[int, int, int] = (255, 0, 0)):
+    hr = f"{int(color[0]):0x}"
+    hg = f"{int(color[1]):0x}"
+    hb = f"{int(color[2]):0x}"
     return f"""#{str(hr if color[0] > 9 else hr+"0")
                  }{str(hg if color[1] > 9 else hg+"0")
                    }{str(hb if color[2] > 9 else hb+"0")}"""
@@ -116,9 +115,11 @@ if __name__ == "__main__":
     #                "#9C9FAD", "#CED1D9", "#FFFFFF", #WHITE
     #                "#1F1F29", "#444454", "#6D6F7F")#BLACK
     image_size = imagg.get_size()
-    font_antialias = 1
+    font_antialias: bool = True
     CLOCK = time.Clock()
     MAINFONT = Font((0, 0), "#9A9A9A", 16)
+
+    y = 1
 
     for y in range(image_size[1]):
         for x in range(image_size[0]):
@@ -132,7 +133,7 @@ if __name__ == "__main__":
 
             WIN.fill("#000000")
             WIN.blit(transform.smoothscale(imagg, SC_RES), (0, 0))
-            MAINFONT.draw(WIN, (SC_RES[0]/2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), (y/image_size[1])*100))), font_antialias, 1)
+            MAINFONT.draw(WIN, (SC_RES[0]//2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), (y/image_size[1])*100))), font_antialias, 1)
             CLOCK.tick(60)
             display.flip()
 
@@ -150,6 +151,6 @@ if __name__ == "__main__":
             quit()
             exit()
 
-        MAINFONT.draw(WIN, (SC_RES[0]/2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), (y/image_size[1])*100))), font_antialias, 1)
+        MAINFONT.draw(WIN, (SC_RES[0]//2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), (y/image_size[1])*100))), font_antialias, 1)
         CLOCK.tick(60)
         display.flip()
