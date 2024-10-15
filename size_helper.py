@@ -35,18 +35,18 @@ class Font:
                     return True
         return False
 
-    def draw(self, win: Surface, pos: Tuple[int, int], text: str, antialians: int, centering: int = 0):
+    def draw(self, win: Surface, pos: Tuple[int, int], text: str, antialias: int, centering: int = 0):
         if centering:
-            win.blits([(self.font.render(text, antialians, self.color),
+            win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
         else:
-            win.blits([(self.font.render(text, antialians, self.color),
+            win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 
-    def blit(self, win: Surface, antialians: int):
-        win.blits([(self.font.render(text, antialians, self.color),
+    def blit(self, win: Surface, antialias: int):
+        win.blits([(self.font.render(text, antialias, self.color),
                    (self.x, self.y+y*self.h))
                    for y, text in enumerate(self.text.split("\n"))])
 

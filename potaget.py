@@ -32,38 +32,38 @@ class MainFont:
             self.text += char
         print(text_in, " ", char)
 
-    def draw(self, text: str, antialians: bool, pos: tuple[int, int], centering: int = 0, bgcolor: str | int | None = None):
+    def draw(self, text: str, antialias: bool, pos: tuple[int, int], centering: int = 0, bgcolor: str | int | None = None):
         if bgcolor is not None:
             if centering:
-                self.WIN.blits([(self.font.render(text, antialians, self.color, bgcolor),
+                self.WIN.blits([(self.font.render(text, antialias, self.color, bgcolor),
                                 (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                                 for y, text in enumerate(text.split("\n"))])
             else:
-                self.WIN.blits([(self.font.render(text, antialians, self.color, bgcolor),
+                self.WIN.blits([(self.font.render(text, antialias, self.color, bgcolor),
                                 (pos[0], pos[1]+y*self.h))
                                 for y, text in enumerate(text.split("\n"))])
         else:
             if centering:
-                self.WIN.blits([(self.font.render(text, antialians, self.color),
+                self.WIN.blits([(self.font.render(text, antialias, self.color),
                                 (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                                 for y, text in enumerate(text.split("\n"))])
             else:
-                self.WIN.blits([(self.font.render(text, antialians, self.color),
+                self.WIN.blits([(self.font.render(text, antialias, self.color),
                                 (pos[0], pos[1]+y*self.h))
                                 for y, text in enumerate(text.split("\n"))])
 
-    def drat(self, text: str, antialians: bool, pos: tuple[int, int], win: Surface, centering: int = 0):
+    def drat(self, text: str, antialias: bool, pos: tuple[int, int], win: Surface, centering: int = 0):
         if centering:
-            win.blits([(self.font.render(text, antialians, self.color),
+            win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                        for y, text in enumerate(text.split("\n"))])
         else:
-            win.blits([(self.font.render(text, antialians, self.color),
+            win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.split("\n"))])
 
-    def blit(self, antialians: bool):
-        self.WIN.blits([(self.font.render(text, antialians, self.color),
+    def blit(self, antialias: bool):
+        self.WIN.blits([(self.font.render(text, antialias, self.color),
                         (self.x, self.y+y*self.h))
                         for y, text in enumerate(self.text.split("\n"))])
 

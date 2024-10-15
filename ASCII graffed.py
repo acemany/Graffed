@@ -29,8 +29,8 @@ class Font:
         self.font = font.Font(name, scale)
         self.w, self.h = self.font.size("n")
 
-    def render(self, pos: tuple[float, float] | Vector2, text: str, color: str, antialians: bool, centering: int = 0):
-        WIN.blits([(self.font.render(text, antialians, color, (32, 32, 32)), (
+    def render(self, pos: tuple[float, float] | Vector2, text: str, color: str, antialias: bool, centering: int = 0):
+        WIN.blits([(self.font.render(text, antialias, color, (32, 32, 32)), (
                    pos[0]-(self.font.size(text)[0]/2 if centering else 0), pos[1]+y*self.h))
                    for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 

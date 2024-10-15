@@ -33,13 +33,13 @@ class Font:
                     return True
         return False
 
-    def draw(self, win: Surface, pos: Tuple[int, int], text: str, antialians: int, centering: int = 0):
+    def draw(self, win: Surface, pos: tuple[int, int], text: str, antialias: bool, centering: int = 0):
         if centering:
             win.blits([(self.font.render(text, antialians, self.color),
                        (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
         else:
-            win.blits([(self.font.render(text, antialians, self.color),
+            win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 

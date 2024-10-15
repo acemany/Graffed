@@ -84,19 +84,19 @@ class Font:
                     return True
         return False
 
-    def draw(self, pos: tuple[int, int], text: str, antialians: bool, centering: int = 0):
+    def draw(self, pos: tuple[int, int], text: str, antialias: bool, centering: int = 0):
         if centering:
             WIN.blits([(self.font.render(
-                       text, antialians, self.color), (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
+                       text, antialias, self.color), (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
         else:
             WIN.blits([(self.font.render(
-                       text, antialians, self.color), (pos[0], pos[1]+y*self.h))
+                       text, antialias, self.color), (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 
-    def blit(self, antialians: bool):
+    def blit(self, antialias: bool):
         WIN.blits([(self.font.render(
-                   text, antialians, self.color), (self.x, self.y+y*self.h))
+                   text, antialias, self.color), (self.x, self.y+y*self.h))
                    for y, text in enumerate(self.text.split("\n"))])
 
 
