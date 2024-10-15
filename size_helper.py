@@ -5,12 +5,11 @@ from pygame import (display, event, font, image, key, mouse, time, transform, dr
                     Surface)
 # from triangled import draw_polygon
 from potaget import c_p_r
-from typing import Tuple
 from sys import exit
 
 
 class Font:
-    def __init__(self, pos: Tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
+    def __init__(self, pos: tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
         self.font = font.SysFont(name, scale)
         self.w = self.font.size("n")[0]
         self.h = self.font.get_height()
@@ -19,7 +18,7 @@ class Font:
         self.color = color
         self.text = ""
 
-    def text_input(self, key_in: Tuple, text_in: Tuple, lining: bool = True):
+    def text_input(self, key_in: tuple[event.Event], text_in: tuple[event.Event], lining: bool = True):
         for i in text_in:
             char = i.__dict__["text"]
             if char != "":
@@ -35,7 +34,7 @@ class Font:
                     return True
         return False
 
-    def draw(self, win: Surface, pos: Tuple[int, int], text: str, antialias: int, centering: int = 0):
+    def draw(self, win: Surface, pos: tuple[int, int], text: str, antialias: bool, centering: int = 0):
         if centering:
             win.blits([(self.font.render(text, antialias, self.color),
                        (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
@@ -45,7 +44,7 @@ class Font:
                        (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 
-    def blit(self, win: Surface, antialias: int):
+    def blit(self, win: Surface, antialias: bool):
         win.blits([(self.font.render(text, antialias, self.color),
                    (self.x, self.y+y*self.h))
                    for y, text in enumerate(self.text.split("\n"))])
@@ -79,11 +78,13 @@ if __name__ == "__main__":
     stone_wall_icon .set_colorkey("#FF00FF")
     sand_wall_icon  .set_colorkey("#FF00FF")
     char_wall_icon  .set_colorkey("#FF00FF")
-    blocks = ([copper_wall_icon, ([6, 6])],
-              [grass_wall_icon, ([6+TISize, 6])],
-              [stone_wall_icon, ([6+TISize*2, 6])],
-              [sand_wall_icon, ([6+TISize*3, 6])],
-              [char_wall_icon, ([6, 6+TISize])])
+    blocks: tuple[tuple[Surface, list[float]], ...] = (
+        (copper_wall_icon, [6, 6]),
+        (grass_wall_icon, [6+TISize, 6]),
+        (stone_wall_icon, [6+TISize*2, 6]),
+        (sand_wall_icon, [6+TISize*3, 6]),
+        (char_wall_icon, [6, 6+TISize])
+    )
 
     offset = (0, 0)
     font_antialias = True
@@ -135,6 +136,6 @@ if __name__ == "__main__":
 
         WIN.blits(blocks)
         draw.polygon(WIN, (255, 255, 255), [(int(block[1][0]+block[0].get_size()[0]/2), int(block[1][1]+block[0].get_size()[1]/2))for block in blocks])
-        MAINFONT.draw(WIN, (SC_RES[0]/2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), mouse_pos[0], block_move, TISize, floor_ratio))), font_antialias, 1)
+        MAINFONT.draw(WIN, (SC_RES[0]//2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), mouse_pos[0], block_move, TISize, floor_ratio))), font_antialias, 1)
         CLOCK.tick(60)
         display.flip()
