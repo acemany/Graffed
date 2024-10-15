@@ -3,12 +3,13 @@ Copyright 2021, Silas Gyger, silasgyger@gmail.com, All rights reserved.
 
 Borrowed from https://github.com/Nearoo/pygame-text-input under the MIT license.
 """
+from collections.abc import Callable
+from pygame import (KEYDOWN, ACTIVEEVENT, K_RETURN, QUIT,
+                    display, key, event, font, time,
+                    Color, Rect, Surface,
+                    init)
 
-from typing import List, Callable
-import pygame
-import pygame.locals as pl
-
-pygame.font.init()
+font.init()
 
 
 class TextInputManager:
@@ -32,8 +33,8 @@ class TextInputManager:
                  initial: str = "",
                  validator: Callable[[str], bool] = lambda x: True):
 
-        self.left = initial  # string to the left of the cursor
-        self.right = ""  # string to the right of the cursor
+        self.left: str = initial  # string to the left of the cursor
+        self.right: str = ""  # string to the right of the cursor
         self.validator = validator
 
     @property
@@ -42,7 +43,7 @@ class TextInputManager:
         return self.left + self.right
 
     @value.setter
-    def value(self, value):
+    def value(self, value: str):
         cursor_pos = self.cursor_pos
         self.left = value[:cursor_pos]
         self.right = value[cursor_pos:]
@@ -53,27 +54,27 @@ class TextInputManager:
         return len(self.left)
 
     @cursor_pos.setter
-    def cursor_pos(self, value):
+    def cursor_pos(self, value: int):
         complete = self.value
         self.left = complete[:value]
         self.right = complete[value:]
 
-    def update(self, events: List[pygame.event.Event]):
+    def update(self, events: list[event.Event]):
         """
         Update the interal state with fresh pygame events.
-        Call this every frame with all events returned by `pygame.event.get()`.
+        Call this every frame with all events returned by `event.get()`.
         """
-        for event in events:
-            if event.type == pl.KEYDOWN:
+        for e in events:
+            if e.type == KEYDOWN:
                 v_before = self.value
                 c_before = self.cursor_pos
-                self._process_keydown(event)
+                self._process_keydown(e)
                 if not self.validator(self.value):
                     self.value = v_before
                     self.cursor_pos = c_before
 
-    def _process_keydown(self, ev: pygame.event.Event):
-        attrname = f"_process_{pygame.key.name(ev.key)}"
+    def _process_keydown(self, ev: event.Event):
+        attrname = f"_process_{key.name(ev.key)}"
         if hasattr(self, attrname):
             getattr(self, attrname)()
         else:
@@ -100,8 +101,8 @@ class TextInputManager:
     def _process_return(self):
         pass
 
-    def _process_other(self, event: pygame.event.Event):
-        self.left += event.unicode
+    def _process_other(self, e: event.Event):
+        self.left += e.unicode
 
 
 class TextInputVisualizer:
@@ -120,7 +121,7 @@ class TextInputVisualizer:
     values can freely be changed between renders without performance overhead.
 
     :param manager: The TextInputManager used to manage the user input
-    :param font_object: a pygame.font.Font object used for rendering
+    :param font_object: a font.Font object used for rendering
     :param antialias: whether to render the font antialiased or not
     :param font_color: color of font rendered
     :param cursor_blink_interal: the interval of the cursor blinking, in ms
@@ -128,20 +129,20 @@ class TextInputVisualizer:
     :param cursor_color: The color of the cursor
     """
     def __init__(self,
-                 manager: TextInputManager = None,
-                 font_object: pygame.font.Font = None,
+                 manager: TextInputManager | None = None,
+                 font_object: font.Font | None = None,
                  antialias: bool = True,
-                 font_color: List[int] = (0, 0, 0),
+                 font_color: tuple[int, int, int] | Color = (0, 0, 0),
                  cursor_blink_interval: int = 300,
                  cursor_width: int = 3,
-                 cursor_color: List[int] = (0, 0, 0)):
+                 cursor_color: tuple[int, int, int] | Color = (0, 0, 0)):
 
         self._manager = TextInputManager() if manager is None else manager
-        self._font_object = pygame.font.Font(pygame.font.get_default_font(), 25) if font_object is None else font_object
+        self._font_object = font.Font(font.get_default_font(), 25) if font_object is None else font_object
         self._antialias = antialias
         self._font_color = font_color
 
-        self._clock = pygame.time.Clock()
+        self._clock = time.Clock()
         self._cursor_blink_interval = cursor_blink_interval
         self._cursor_visible = False
         self._last_blink_toggle = 0
@@ -149,7 +150,7 @@ class TextInputVisualizer:
         self._cursor_width = cursor_width
         self._cursor_color = cursor_color
 
-        self._surface = pygame.Surface((self._cursor_width, self._font_object.get_height()))
+        self._surface: Surface = Surface((self._cursor_width, self._font_object.get_height()))
         self._rerender_required = True
 
     @property
@@ -194,7 +195,7 @@ class TextInputVisualizer:
         return self._font_color
 
     @font_color.setter
-    def font_color(self, v: List[int]):
+    def font_color(self, v: list[int]):
         self._font_color = v
         self._require_rerender()
 
@@ -204,7 +205,7 @@ class TextInputVisualizer:
         return self._font_object
 
     @font_object.setter
-    def font_object(self, v: pygame.font.Font):
+    def font_object(self, v: font.Font):
         self._font_object = v
         self._require_rerender()
 
@@ -235,7 +236,7 @@ class TextInputVisualizer:
         return self._cursor_color
 
     @cursor_color.setter
-    def cursor_color(self, v: List[int]):
+    def cursor_color(self, v: list[int]):
         self._cursor_color = v
         self._require_rerender()
 
@@ -248,11 +249,11 @@ class TextInputVisualizer:
     def cursor_blink_interval(self, v: int):
         self._cursor_blink_interval = v
 
-    def update(self, events: List[pygame.event.Event]):
+    def update(self, events: list[event.Event]):
         """
         Update internal state.
 
-        Call this once every frame with all events returned by `pygame.event.get()`
+        Call this once every frame with all events returned by `event.get()`
         """
 
         # Update self.manager internal state, rerender if value changes
@@ -271,7 +272,7 @@ class TextInputVisualizer:
             self._require_rerender()
 
         # Make cursor visible when something is pressed
-        if [event for event in events if event.type == pl.KEYDOWN]:
+        if [e for e in events if e.type == KEYDOWN]:
             self._last_blink_toggle = 0
             self._cursor_visible = True
             self._require_rerender()
@@ -286,46 +287,46 @@ class TextInputVisualizer:
                                                    self.antialias,
                                                    self.font_color)
         w, h = rendered_surface.get_size()
-        self._surface = pygame.Surface((w + self._cursor_width, h))
-        self._surface = self._surface.convert_alpha(rendered_surface)
+        self._surface = Surface((w + self._cursor_width, h))
+        self._surface = rendered_surface.convert_alpha()
         self._surface.fill((0, 0, 0, 0))
         self._surface.blit(rendered_surface, (0, 0))
 
         if self._cursor_visible:
             str_left_of_cursor = self.manager.value[:self.manager.cursor_pos]
             cursor_y = self.font_object.size(str_left_of_cursor)[0]
-            cursor_rect = pygame.Rect(cursor_y, 0, self._cursor_width, self.font_object.get_height())
+            cursor_rect = Rect(cursor_y, 0, self._cursor_width, self.font_object.get_height())
             self._surface.fill(self._cursor_color, cursor_rect)
 
 
 if __name__ == "__main__":
-    pygame.init()
+    init()
 
     textinput = TextInputVisualizer(manager=TextInputManager(validator=lambda input: fontact),
-                                    font_object=pygame.font.SysFont("Consolas", 55))
+                                    font_object=font.SysFont("Consolas", 55))
 
     fontact = False
-    screen = pygame.display.set_mode((1000, 200))
-    clock = pygame.time.Clock()
+    screen = display.set_mode((1000, 200))
+    clock = time.Clock()
 
-    pygame.key.set_repeat(200, 25)  # long press -> autopress
+    key.set_repeat(200, 25)  # long press -> autopress
 
     while True:
         screen.fill((225, 225, 225))
 
-        events = pygame.event.get()
+        events = event.get()
 
         textinput.update(events)
 
         screen.blit(textinput.surface, (10, 10))
 
-        for event in events:
-            if event.type == pygame.QUIT:
+        for e in events:
+            if e.type == QUIT:
                 exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            if e.type == KEYDOWN and e.key == K_RETURN:
                 print(f"User pressed enter! Input so far: {textinput.value}")
-            if event.type == pygame.ACTIVEEVENT:
-                fontact = event.dict["gain"]
+            if e.type == ACTIVEEVENT:
+                fontact = e.dict["gain"]
 
-        pygame.display.update()
+        display.update()
         clock.tick(60)

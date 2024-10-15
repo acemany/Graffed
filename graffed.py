@@ -5,53 +5,61 @@ from pygame import (KEYDOWN, MOUSEBUTTONDOWN, MOUSEBUTTONUP, MOUSEWHEEL, QUIT, T
                     K_l, K_o, K_s,
                     init, quit as squit)
 from potaget import open_file_as, save_file_as, c_p_r
-from sys import argv, path as game_path
-from typing import Tuple
-from sys import exit
+from sys import argv, exit
+from pathlib import Path
 
 
 # CLASSES
 class Camera:
-    def __init__(self, pos: Tuple[int, int] = (0, 0)):
+    def __init__(self, pos: tuple[int, int] = (0, 0)):
         self.x, self.y = -pos[0], -pos[1]
 
     @property
-    def pos(self) -> Tuple[int, int]:
-        return list(map(int, (self.x, self.y)))
+    def pos(self) -> tuple[int, int]:
+        return (int(self.x), int(self.y))
 
-    def update(self, to: Tuple[int, int]):
+    def update(self, to: tuple[float, float]):
         self.x += to[0]
         self.y += to[1]
 
 
 class Slider:
-    def __init__(self, pos: Tuple[int, int], size: Tuple[int, int],
+    def __init__(self, pos: tuple[int, int], size: tuple[int, int],
                  scale: int, min: int, max: int, base_color: str = "#454545", slider_color: str = "#565656"):
         self.max = max
         self.x, self.y = pos
         self.w, self.h = size
-        self.min = self.num = min
-        self.base_color = base_color
+        self.min: float = min
+        self._num: float = self.min
+        self.base_color: str = base_color
         self.scale_ratio = scale/max
         self.slider_color = slider_color
         self.scale = max*self.scale_ratio
 
+    @property
+    def num(self) -> int:
+        return int(self._num)
+
+    @num.setter
+    def num(self, value: int | float):
+        self._num = int(value)
+
     def slide_check(self):
-        return self.x+self.num*self.scale_ratio <\
-            mouse_pos[0] < self.x+self.w+self.num*self.scale_ratio and\
+        return self.x+self._num*self.scale_ratio <\
+            mouse_pos[0] < self.x+self.w+self._num*self.scale_ratio and\
             self.y < mouse_pos[1] < self.y+self.h
 
     def draw(self):
         draw.aaline(WIN, self.base_color, (self.x,            self.y+self.h/2),
                                           (self.x+self.scale, self.y+self.h/2))
-        draw.rect(WIN,   self.base_color, (self.x+self.num*self.scale_ratio,   self.y,
+        draw.rect(WIN,   self.base_color, (self.x+self._num*self.scale_ratio,   self.y,
                                            self.w,   self.h))
-        draw.rect(WIN, self.slider_color, (self.x+self.num*self.scale_ratio+1, self.y+1,
+        draw.rect(WIN, self.slider_color, (self.x+self._num*self.scale_ratio+1, self.y+1,
                                            self.w-2, self.h-2))
 
 
 class Font:
-    def __init__(self, pos: Tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
+    def __init__(self, pos: tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
         self.font = font.SysFont(name, scale)
         self.w = self.font.size("n")[0]
         self.h = self.font.get_height()
@@ -60,7 +68,7 @@ class Font:
         self.color = color
         self.text = ""
 
-    def text_input(self, key_in: Tuple, text_in: Tuple, lining: bool = True):
+    def text_input(self, key_in: list[event.Event], text_in: list[event.Event], lining: bool = True):
         for i in text_in:
             char = i.__dict__["text"]
             if char != "":
@@ -76,7 +84,7 @@ class Font:
                     return True
         return False
 
-    def draw(self, pos: Tuple[int, int], text: str, antialians: int, centering: int = 0):
+    def draw(self, pos: tuple[int, int], text: str, antialians: bool, centering: int = 0):
         if centering:
             WIN.blits([(self.font.render(
                        text, antialians, self.color), (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
@@ -86,7 +94,7 @@ class Font:
                        text, antialians, self.color), (pos[0], pos[1]+y*self.h))
                        for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
 
-    def blit(self, antialians: int):
+    def blit(self, antialians: bool):
         WIN.blits([(self.font.render(
                    text, antialians, self.color), (self.x, self.y+y*self.h))
                    for y, text in enumerate(self.text.split("\n"))])
@@ -110,7 +118,7 @@ class Pic:
         self.image = transform.scale(self.rimage, (self.surfsize[0]*scale_ratio,
                                                    self.surfsize[1]*scale_ratio))
 
-    def draw(self, offset: Tuple[int, int]):
+    def draw(self, offset: tuple[float, float]):
         WIN.blit(self.image, (-offset[0]*scale_ratio,
                               -offset[1]*scale_ratio))
 
@@ -119,7 +127,7 @@ class Pic:
 
     # INSTRUMENTS
     def pencil(self):
-        width = int(scale_slider.num)
+        width = scale_slider.num
         draw.line(self.rimage, color, world_l_pos, world_m_pos, width)
         draw.circle(self.rimage, color, world_l_pos, width/2)
         draw.circle(self.rimage, color, world_m_pos, width/2)
@@ -145,15 +153,16 @@ class Pic:
         self.image = transform.scale(self.rimage, (self.surfsize[0]*scale_ratio,
                                                    self.surfsize[1]*scale_ratio))
 
-    def pipette(self):
+    def pipette(self) -> tuple[int, int, int]:
         try:
-            return self.rimage.get_at(tuple(map(int, world_m_pos)))
+            colour: Color = self.rimage.get_at(tuple(map(int, world_m_pos)))
+            return colour.r, colour.g, colour.b
         except IndexError:
-            return Color(color)
+            return color
 
 
 # FUNCTIONS
-def rect_to_hcv(color: Tuple[int, int, int], x: int, y: int):
+def rect_to_hcv(color: tuple[int, int, int], x: int, y: int):
     saturation = (255-x)/32+1
     height = 255-y
     return (int(127-(127-color[0])/saturation)*height//255,
@@ -161,7 +170,7 @@ def rect_to_hcv(color: Tuple[int, int, int], x: int, y: int):
             int(127-(127-color[2])/saturation)*height//255)
 
 
-def rgb_to_hex(color: Tuple[int, int, int] = (255, 0, 0)):
+def rgb_to_hex(color: tuple[int, int, int] = (255, 0, 0)):
     hr = f"{int(color[0]): 0x}"
     hg = f"{int(color[1]): 0x}"
     hb = f"{int(color[2]): 0x}"
@@ -177,7 +186,7 @@ def hex_to_rgb(color: str = "#ff0000"):
             int(color[4]+color[5], base=16))
 
 
-def screen_to_world(pos: Tuple[int, int]):
+def screen_to_world(pos: tuple[float, float] | Vector2 | list[float]):
     return Vector2((pos[0]+CAMERA.pos[0])/scale_ratio+GRAFFED_FILE.surfsize[0]/2,
                    (pos[1]+CAMERA.pos[1])/scale_ratio+GRAFFED_FILE.surfsize[1]/2)
 
@@ -185,7 +194,7 @@ def screen_to_world(pos: Tuple[int, int]):
 if __name__ == "__main__":
     # INIT
     init()
-    gamedir = f"{game_path[0]}"
+    gamedir = Path(__file__).parent
     WIN = (display.set_mode())
     SC_RES = WIN.get_size()
 
@@ -193,16 +202,16 @@ if __name__ == "__main__":
 
     # VARIABLES
     pen_pos = (0, 0)
-    color = (255, 0, 0)
+    color: tuple[int, int, int] = (255, 0, 0)
     scale_ratio = 1
-    font_antialias = 1
+    font_antialias = True
     change_color = False
     mouse_pos = Vector2()
     last_mouse_pos = Vector2(0, 0)
     slider_move = (False, 0)
     editor_category = "environment"
     instrument = "line"  # pipette, pencil, line, rect
-    graffed_file_name = "testing.png"if len(argv) == 1 else argv[1]
+    graffed_file_name: str = "testing.png"if len(argv) == 1 else argv[1]
 
     # SURFACES
     TOOLBAR_SURFACE = Surface((200, SC_RES[1]))
@@ -227,11 +236,11 @@ if __name__ == "__main__":
     GRAFFED_FILE = Pic(graffed_file_name)
     MAINFONT = Font((0, 0), "#9A9A9A", 16)
     color_font = Font((0, 0), "#9A9A9A", 16)
-    CAMERA = Camera((SC_RES[0]/2, SC_RES[1]/2))
-    slider_red = Slider((6, 76), (TISize/2, TISize), 180, 0, 255, "#CC3333")
-    slider_green = Slider((6, 76+25), (TISize/2, TISize), 180, 0, 255, "#33CC33")
-    slider_blue = Slider((6, 76+50), (TISize/2, TISize), 180, 0, 255, "#3333CC")
-    scale_slider = Slider((6, 76+75), (TISize/2, TISize), 180, 1, 256, "#454545")
+    CAMERA = Camera((SC_RES[0]//2, SC_RES[1]//2))
+    slider_red = Slider((6, 76), (TISize//2, TISize), 180, 0, 255, "#CC3333")
+    slider_green = Slider((6, 76+25), (TISize//2, TISize), 180, 0, 255, "#33CC33")
+    slider_blue = Slider((6, 76+50), (TISize//2, TISize), 180, 0, 255, "#3333CC")
+    scale_slider = Slider((6, 76+75), (TISize//2, TISize), 180, 1, 256, "#454545")
     slider_red.num, slider_green.num, slider_blue.num = color
 
     while True:
@@ -258,7 +267,7 @@ if __name__ == "__main__":
                 GRAFFED_FILE.resize()
 
         if change_color:
-            if color_font.text_input(keys_down, text_in, 0):
+            if color_font.text_input(keys_down, text_in, False):
                 change_color = False
                 try:
                     color = hex_to_rgb(color_font.text)
@@ -282,16 +291,16 @@ if __name__ == "__main__":
                         slider_move = (True, 3)
                     else:
                         slider_move = (False, 0)
-                        if c_p_r(*mouse_pos,   6,        80,       98,         20):
+                        if c_p_r(mouse_pos.x, mouse_pos.y,   6,        80,       98,         20):
                             color_font.text = rgb_to_hex(color)
                             change_color = True
-                        elif c_p_r(*mouse_pos, 6,        5,        TISize, TISize):
+                        elif c_p_r(mouse_pos.x, mouse_pos.y, 6,        5,        TISize, TISize):
                             instrument = "pipette"
-                        elif c_p_r(*mouse_pos, 6,        5+TISize, TISize, TISize):
+                        elif c_p_r(mouse_pos.x, mouse_pos.y, 6,        5+TISize, TISize, TISize):
                             instrument = "pencil"
-                        elif c_p_r(*mouse_pos, 6+TISize, 5,        TISize, TISize):
+                        elif c_p_r(mouse_pos.x, mouse_pos.y, 6+TISize, 5,        TISize, TISize):
                             instrument = "line"
-                        elif c_p_r(*mouse_pos, 6+TISize, 5+TISize, TISize, TISize):
+                        elif c_p_r(mouse_pos.x, mouse_pos.y, 6+TISize, 5+TISize, TISize, TISize):
                             instrument = "rect"
                 elif instrument == "line" or instrument == "rect" and mouse_x > 200:
                     pen_pos = mouse_pos[:]
@@ -315,6 +324,7 @@ if __name__ == "__main__":
                 elif i.__dict__["key"] == K_o:
                     try:
                         graffed_file_name = open_file_as()
+                        assert not not graffed_file_name
                         GRAFFED_FILE.__init__(graffed_file_name)
                     except FileNotFoundError:
                         pass
@@ -331,9 +341,9 @@ if __name__ == "__main__":
                     GRAFFED_FILE.pencil()
                 elif instrument == "pipette":
                     color = GRAFFED_FILE.pipette()
-                    slider_red  .num = color.r
-                    slider_green.num = color.g
-                    slider_blue .num = color.b
+                    slider_red  .num = color[0]
+                    slider_green.num = color[1]
+                    slider_blue .num = color[2]
                 elif instrument == "line":
                     liline = mouse_pos-pen_pos
                     k = liline.y/liline.x if liline.x != 0 and liline.y != 0 else 1e+32
@@ -360,9 +370,9 @@ if __name__ == "__main__":
         slider_blue .draw()
         scale_slider.draw()
 
-        MAINFONT.draw((SC_RES[0]/2, 0), "\b".join(map(str, (scale_ratio*100//1,
-                                                            instrument,
-                                                            mouse_pos,
-                                                            graffed_file_name))), font_antialias, 1)
+        MAINFONT.draw((SC_RES[0]//2, 0), "\b".join(map(str, (scale_ratio*100//1,
+                                                             instrument,
+                                                             mouse_pos,
+                                                             graffed_file_name))), font_antialias, 1)
         CLOCK.tick(60)
         display.flip()

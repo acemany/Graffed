@@ -2,32 +2,34 @@ from pygame import (MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, TEXTINPUT,
                     display, event, font, image, mouse, time,
                     init, quit,
                     Vector2)
-from sys import path as game_path
-from typing import Tuple
+from pathlib import Path
+
+
+game_path = Path(__file__).parent
 
 
 class Camera:
-    def __init__(self, pos: Tuple[int, int] = (0, 0)):
+    def __init__(self, pos: tuple[int, int] = (0, 0)):
         self.position = -Vector2(pos)
 
     @property
-    def pos(self) -> Tuple[int, int]:
+    def pos(self) -> tuple[int, int]:
         return self.position.x.__int__(), self.position.y.__int__()
 
     @pos.setter
-    def pos(self, pos: Tuple[int, int]):
+    def pos(self, pos: tuple[int, int]):
         self.position.update(pos)
 
-    def update(self, to: Tuple[int, int]):
+    def update(self, to: tuple[int, int]):
         self.position += to
 
 
 class Font:
-    def __init__(self, scale: int = 16, name: str = f"{game_path[0]}/console.ttf"):  # MS serif
+    def __init__(self, scale: int = 16, name: str = f"{game_path}/console.ttf"):  # MS serif
         self.font = font.Font(name, scale)
         self.w, self.h = self.font.size("n")
 
-    def render(self, pos: Tuple[int, int], text: str, color: str, antialians: int, centering: int = 0):
+    def render(self, pos: tuple[float, float] | Vector2, text: str, color: str, antialians: bool, centering: int = 0):
         WIN.blits([(self.font.render(text, antialians, color, (32, 32, 32)), (
                    pos[0]-(self.font.size(text)[0]/2 if centering else 0), pos[1]+y*self.h))
                    for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
@@ -36,12 +38,12 @@ class Font:
 if __name__ == "__main__":
     SC_RES = (600, 450)
     init()
-    gamedir = f"{game_path[0]}"
+    gamedir = game_path
     WIN = (display.set_mode(SC_RES))
     display.set_icon(image.load(f"{gamedir}\\assets\\icon.bmp").convert())
 
     MAINFONT = Font()
-    font_antialias = 1
+    font_antialias = True
     last_mouse_pos = (0, 0)
     # PIC_SCALE = (SC_RES[0]//MAINFONT.w+1, SC_RES[1]//MAINFONT.h+1)
     # ASCII_pic = [["# " for x in range(PIC_SCALE[0])]for y in range(PIC_SCALE[1])]
