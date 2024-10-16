@@ -25,14 +25,14 @@ class Camera:
 
 
 class Font:
-    def __init__(self, scale: int = 16, name: str = f"{game_path}/console.ttf"):  # MS serif
+    def __init__(self, scale: int = 16, name: str = f'{game_path}/console.ttf'):  # MS serif
         self.font = font.Font(name, scale)
-        self.w, self.h = self.font.size("n")
+        self.w, self.h = self.font.size('n')
 
     def render(self, pos: tuple[float, float] | Vector2, text: str, color: str, antialias: bool, centering: int = 0):
         WIN.blits([(self.font.render(text, antialias, color, (32, 32, 32)), (
                    pos[0]-(self.font.size(text)[0]/2 if centering else 0), pos[1]+y*self.h))
-                   for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
+                   for y, text in enumerate(text.replace('\b', ' | ').split('\n'))])
 
 
 if __name__ == "__main__":
@@ -40,16 +40,16 @@ if __name__ == "__main__":
     init()
     gamedir = game_path
     WIN = (display.set_mode(SC_RES))
-    display.set_icon(image.load(f"{gamedir}\\assets\\icon.bmp").convert())
+    display.set_icon(image.load(f'{gamedir}/assets/icon.bmp').convert())
 
     MAINFONT = Font()
     font_antialias = True
     last_mouse_pos = (0, 0)
     # PIC_SCALE = (SC_RES[0]//MAINFONT.w+1, SC_RES[1]//MAINFONT.h+1)
     # ASCII_pic = [["# " for x in range(PIC_SCALE[0])]for y in range(PIC_SCALE[1])]
-    gradient = " .-' = +*0# @"
-    with open(f"{gamedir}/database.acemany", "r") as file:
-        ASCII_pic = [[chr for chr in chrs]for chrs in file.read().split("\n")]
+    gradient = " .-'=+*0#@"
+    with open(gamedir/'database.acemany', 'r') as file:
+        ASCII_pic = [[chr for chr in chrs]for chrs in file.read().split('\n')]
     PIC_SCALE = (ASCII_pic[0].__len__(), ASCII_pic.__len__())
     paint_char = "w"
     paint = 0
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     CAMERA = Camera()
 
     while True:
-        WIN.fill("#000000")
+        WIN.fill('#000000')
 
         mouse_keys_down = event.get(MOUSEBUTTONDOWN)
         mouse_keys = mouse.get_pressed()
@@ -87,9 +87,9 @@ if __name__ == "__main__":
                 paint = 0
         last_mouse_pos = mouse_pos[:]
 
-        [MAINFONT.render(CAMERA.position+(0, y*MAINFONT.h), chars.__str__()[2: -1: 5], "#FFFFFF",
-         font_antialias, 0)for y, chars in enumerate(ASCII_pic)]
+        [MAINFONT.render(CAMERA.position+(0, y*MAINFONT.h), chars.__str__()[2: -1: 5], '#FFFFFF', font_antialias, 0)
+         for y, chars in enumerate(ASCII_pic)]
 
-        MAINFONT.render((SC_RES[0]/2, 0), "\b".join(map(str, (int(CLOCK.get_fps()), mouse_pos, CAMERA.pos, paint_char))), "#707070", font_antialias, 1)
+        MAINFONT.render((SC_RES[0]/2, 0), '\b'.join(map(str, (int(CLOCK.get_fps()), mouse_pos, CAMERA.pos, paint_char))), '#707070', font_antialias, 1)
         display.flip()
         CLOCK.tick(60)

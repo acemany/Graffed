@@ -57,7 +57,7 @@ if __name__ == "__main__":
     display.set_icon(image.load("icon.jpg").convert())
 
     # VARIABLES
-    # rect_icon = image.load("assets\\instruments\\rect.png")
+    # rect_icon = image.load("assets/instruments/rect.png")
     # rect_icon.set_colorkey("#FF00FF")
     # rect_icon.fill((0, 0, 0))
     # TISize = rect_icon.get_size()[0]

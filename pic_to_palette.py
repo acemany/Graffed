@@ -81,13 +81,13 @@ def hex_to_rgb(color: str = "#ff0000"):
 if __name__ == "__main__":
     init()
     SC_RES = [800, 600]
-    imagg = image.load("icon.png"if len(argv) == 1 else argv[1])
+    imagg = image.load("icon.png" if len(argv) == 1 else argv[1])
     if imagg.get_size()[0] < SC_RES[0]:
         SC_RES[0] = imagg.get_size()[0]
     if imagg.get_size()[1] < SC_RES[1]:
         SC_RES[1] = imagg.get_size()[1]
     WIN = (display.set_mode(SC_RES))
-    display.set_icon(image.load("assets\\icon.bmp").convert())
+    display.set_icon(image.load("assets/icon.bmp").convert())
 
     RGBcolor = (Vector3(32,  8,   32),  Vector3(255, 200, 150), Vector3(32,  32,  96),
                 Vector3(64,  128, 200), Vector3(255, 160, 140), Vector3(255, 128, 64),

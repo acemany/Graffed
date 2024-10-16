@@ -25,7 +25,7 @@ class Camera:
 
 class Slider:
     def __init__(self, pos: tuple[int, int], size: tuple[int, int],
-                 scale: int, min: int, max: int, base_color: str = "#454545", slider_color: str = "#565656"):
+                 scale: int, min: int, max: int, base_color: str = '#454545', slider_color: str = '#565656'):
         self.max = max
         self.x, self.y = pos
         self.w, self.h = size
@@ -59,9 +59,9 @@ class Slider:
 
 
 class Font:
-    def __init__(self, pos: tuple[int, int], color: str = "#BBBBBB", scale: int = 6, name: str = "Arial"):
+    def __init__(self, pos: tuple[int, int], color: str = '#BBBBBB', scale: int = 6, name: str = 'Arial'):
         self.font = font.SysFont(name, scale)
-        self.w = self.font.size("n")[0]
+        self.w = self.font.size('n')[0]
         self.h = self.font.get_height()
         self.indicator_pos = 0
         self.x, self.y = pos
@@ -88,22 +88,21 @@ class Font:
         if centering:
             WIN.blits([(self.font.render(
                        text, antialias, self.color), (pos[0]-self.font.size(text)[0]/2, pos[1]+y*self.h))
-                       for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
+                       for y, text in enumerate(text.replace('\b', ' | ').split('\n'))])
         else:
             WIN.blits([(self.font.render(
                        text, antialias, self.color), (pos[0], pos[1]+y*self.h))
-                       for y, text in enumerate(text.replace("\b", " | ").split("\n"))])
+                       for y, text in enumerate(text.replace('\b', ' | ').split('\n'))])
 
     def blit(self, antialias: bool):
         WIN.blits([(self.font.render(
                    text, antialias, self.color), (self.x, self.y+y*self.h))
-                   for y, text in enumerate(self.text.split("\n"))])
+                   for y, text in enumerate(self.text.split('\n'))])
 
 
 class Pic:
-    def __init__(self, near_path_to_file: str):
-        path_to_file = f"{gamedir}/{near_path_to_file}"
-        rimage = image.load(f"{path_to_file}").convert()
+    def __init__(self, path_to_file: str):
+        rimage = image.load(path_to_file).convert()
         self.filename = path_to_file
         self.rimage = rimage
         self.surfsize = (rimage.get_width(), rimage.get_height())
@@ -122,8 +121,8 @@ class Pic:
         WIN.blit(self.image, (-offset[0]*scale_ratio,
                               -offset[1]*scale_ratio))
 
-    def save(self, filename: str = ""):
-        image.save(self.rimage, str(f"{gamedir}/{self.filename if filename == ''else filename}"))
+    def save(self, filename: str = ''):
+        image.save(self.rimage, str(gamedir/'{self.filename if filename == ''else filename}'))
 
     # INSTRUMENTS
     def pencil(self):
@@ -174,13 +173,13 @@ def rgb_to_hex(color: tuple[int, int, int] = (255, 0, 0)):
     hr = f"{int(color[0]): 0x}"
     hg = f"{int(color[1]): 0x}"
     hb = f"{int(color[2]): 0x}"
-    return f"""#{str(hr if color[0] > 9 else hr+"0")
-                 }{str(hg if color[1] > 9 else hg+"0")
-                   }{str(hb if color[2] > 9 else hb+"0")}"""
+    return f"""#{str(hr if color[0] > 9 else hr+'0')
+                 }{str(hg if color[1] > 9 else hg+'0')
+                   }{str(hb if color[2] > 9 else hb+'0')}"""
 
 
-def hex_to_rgb(color: str = "#ff0000"):
-    color = color.replace("#", "", 1)
+def hex_to_rgb(color: str = '#ff0000'):
+    color = color.replace('#', '', 1)
     return (int(color[0]+color[1], base=16),
             int(color[2]+color[3], base=16),
             int(color[4]+color[5], base=16))
@@ -198,7 +197,7 @@ if __name__ == "__main__":
     WIN = (display.set_mode())
     SC_RES = WIN.get_size()
 
-    display.set_icon(image.load(f"{gamedir}/assets/icon.bmp").convert())
+    display.set_icon(image.load(gamedir/'assets/icon.bmp').convert())
 
     # VARIABLES
     pen_pos = (0, 0)
@@ -211,21 +210,21 @@ if __name__ == "__main__":
     slider_move = (False, 0)
     editor_category = "environment"
     instrument = "line"  # pipette, pencil, line, rect
-    graffed_file_name: str = "testing.png"if len(argv) == 1 else argv[1]
+    graffed_file_name: str = "testing.png" if len(argv) == 1 else argv[1]
 
     # SURFACES
     TOOLBAR_SURFACE = Surface((200, SC_RES[1]))
-    draw.rect(TOOLBAR_SURFACE, "#454545", (0,  0,  200, SC_RES[1]))
-    draw.rect(TOOLBAR_SURFACE, "#676767", (0,  0,  198, SC_RES[1]))
-    pipette_icon = image.load(f"{gamedir}/assets/instruments/pipette.png")
-    pencil_icon = image.load(f"{gamedir}/assets/instruments/pencil.png")
-    line_icon = image.load(f"{gamedir}/assets/instruments/line.png")
-    rect_icon = image.load(f"{gamedir}/assets/instruments/rect.png")
+    draw.rect(TOOLBAR_SURFACE, '#454545', (0,  0,  200, SC_RES[1]))
+    draw.rect(TOOLBAR_SURFACE, '#676767', (0,  0,  198, SC_RES[1]))
+    pipette_icon = image.load(gamedir/'assets/instruments/pipette.png')
+    pencil_icon = image.load(gamedir/'assets/instruments/pencil.png')
+    line_icon = image.load(gamedir/'assets/instruments/line.png')
+    rect_icon = image.load(gamedir/'assets/instruments/rect.png')
     TISize = line_icon.get_size()[0]
-    pipette_icon.set_colorkey("#FF00FF")
-    pencil_icon .set_colorkey("#FF00FF")
-    line_icon   .set_colorkey("#FF00FF")
-    rect_icon   .set_colorkey("#FF00FF")
+    pipette_icon.set_colorkey('#FF00FF')
+    pencil_icon .set_colorkey('#FF00FF')
+    line_icon   .set_colorkey('#FF00FF')
+    rect_icon   .set_colorkey('#FF00FF')
     TOOLBAR_SURFACE.blits(((pipette_icon, (6,        5)),
                            (pencil_icon,  (6,        5+TISize)),
                            (line_icon,    (6+TISize, 5)),
@@ -234,17 +233,17 @@ if __name__ == "__main__":
     # CLASSES
     CLOCK = time.Clock()
     GRAFFED_FILE = Pic(graffed_file_name)
-    MAINFONT = Font((0, 0), "#9A9A9A", 16)
-    color_font = Font((0, 0), "#9A9A9A", 16)
+    MAINFONT = Font((0, 0), '#9A9A9A', 16)
+    color_font = Font((0, 0), '#9A9A9A', 16)
     CAMERA = Camera((SC_RES[0]//2, SC_RES[1]//2))
-    slider_red = Slider((6, 76), (TISize//2, TISize), 180, 0, 255, "#CC3333")
-    slider_green = Slider((6, 76+25), (TISize//2, TISize), 180, 0, 255, "#33CC33")
-    slider_blue = Slider((6, 76+50), (TISize//2, TISize), 180, 0, 255, "#3333CC")
-    scale_slider = Slider((6, 76+75), (TISize//2, TISize), 180, 1, 256, "#454545")
+    slider_red = Slider((6, 76), (TISize//2, TISize), 180, 0, 255, '#CC3333')
+    slider_green = Slider((6, 76+25), (TISize//2, TISize), 180, 0, 255, '#33CC33')
+    slider_blue = Slider((6, 76+50), (TISize//2, TISize), 180, 0, 255, '#3333CC')
+    scale_slider = Slider((6, 76+75), (TISize//2, TISize), 180, 1, 256, '#454545')
     slider_red.num, slider_green.num, slider_blue.num = color
 
     while True:
-        WIN.fill("#404040")
+        WIN.fill('#404040')
         GRAFFED_FILE.draw((CAMERA.pos[0]/scale_ratio+GRAFFED_FILE.surfsize[0]/2,
                            CAMERA.pos[1]/scale_ratio+GRAFFED_FILE.surfsize[1]/2))
 
@@ -261,7 +260,7 @@ if __name__ == "__main__":
         world_p_pos = screen_to_world(pen_pos)
 
         for i in event.get(MOUSEWHEEL, 0):
-            new = scale_ratio+i.__dict__["y"]/8
+            new = scale_ratio+i.__dict__['y']/8
             if 0 < new < 32:
                 scale_ratio = new
                 GRAFFED_FILE.resize()
@@ -279,7 +278,7 @@ if __name__ == "__main__":
             squit()
             exit()
         for i in mouse_keys_down:
-            if i.__dict__["button"] == 1:
+            if i.__dict__['button'] == 1:
                 if mouse_x < 200:
                     if slider_red.slide_check():
                         slider_move = (True, 0)
@@ -305,7 +304,7 @@ if __name__ == "__main__":
                 elif instrument == "line" or instrument == "rect" and mouse_x > 200:
                     pen_pos = mouse_pos[:]
         for i in mouse_keys_up:
-            if i.__dict__["button"] == 1:
+            if i.__dict__['button'] == 1:
                 slider_move = (False, 0)
                 if mouse_x >= 200:
                     if instrument == "line":
@@ -313,15 +312,15 @@ if __name__ == "__main__":
                     elif instrument == "rect":
                         GRAFFED_FILE.rect()
         for i in keys_down:
-            if i.__dict__["key"] == K_ESCAPE:
+            if i.__dict__['key'] == K_ESCAPE:
                 squit()
                 exit()
-            if i.__dict__["key"] == K_LCTRL:
-                if i.__dict__["key"] == K_s:
-                    GRAFFED_FILE.save(save_file_as() if i.__dict__["key"] == K_LSHIFT else "")
-                elif i.__dict__["key"] == K_l:
+            if i.__dict__['key'] == K_LCTRL:
+                if i.__dict__['key'] == K_s:
+                    GRAFFED_FILE.save(save_file_as() if i.__dict__['key'] == K_LSHIFT else '')
+                elif i.__dict__['key'] == K_l:
                     GRAFFED_FILE.__init__(graffed_file_name)
-                elif i.__dict__["key"] == K_o:
+                elif i.__dict__['key'] == K_o:
                     try:
                         graffed_file_name = open_file_as()
                         assert not not graffed_file_name
@@ -370,7 +369,7 @@ if __name__ == "__main__":
         slider_blue .draw()
         scale_slider.draw()
 
-        MAINFONT.draw((SC_RES[0]//2, 0), "\b".join(map(str, (scale_ratio*100//1,
+        MAINFONT.draw((SC_RES[0]//2, 0), '\b'.join(map(str, (scale_ratio*100//1,
                                                              instrument,
                                                              mouse_pos,
                                                              graffed_file_name))), font_antialias, 1)
